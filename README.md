@@ -4,8 +4,8 @@ A command line utility to check the availability of vaccine slots
 ## Usage
 
 ```
-python covid-vaccine-availability.py --help
-usage: covid-vaccine-availability.py [-h] [-t {pin,district}] [-s STATE] [-d DISTRICT] [-a AGE_LIMIT] [-p PIN_CODE]
+python cowin-availability.py --help
+usage: cowin-availability.py [-h] [-t {pin,district}] [-s STATE] [-d DISTRICT] [-a AGE_LIMIT] [-p PIN_CODE]
 
 optional arguments:
   -h, --help            show this help message and exit
