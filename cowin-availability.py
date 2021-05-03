@@ -126,8 +126,16 @@ def print_available_sessions(available_sessions):
 		print("No available sessions!!")
 	else:
 		print("Available sessions are: ")
+		row_template = "{:>30}" * 3
+		print(row_template.format(
+			"name", "pincode", "date"
+		))
 	for center, session in available_sessions:
-		print(center["name"], center["pincode"], session["date"], session["slots"])
+		print(
+			row_template.format(
+				center["name"], center["pincode"], session["date"]
+			)
+		)
 
 def search_by_district(state, district):
 	get_states()
