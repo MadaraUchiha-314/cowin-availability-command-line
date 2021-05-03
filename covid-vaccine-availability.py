@@ -73,9 +73,9 @@ def define_arguments(parser):
 	parser.add_argument(
 		"-p",
 		"--pin_code",
-		help="The age limit",
+		help="The pin code",
 		type=int,
-		default=DEFAULT_AGE_LIMIT
+		default=560001
 	)
 
 def get_states():
