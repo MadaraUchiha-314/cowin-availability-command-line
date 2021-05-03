@@ -37,7 +37,7 @@ def define_arguments(parser):
 	parser.add_argument(
 		"-t",
 		"--search_type",
-		help="The type of search to perform",
+		help="The type of search to perform. You can either directly give a pincode or give a combination of state + district.",
 		type=str,
 		default=search_types["DISTRICT"],
 		choices=[
@@ -51,7 +51,7 @@ def define_arguments(parser):
 		"--state",
 		help="The name of the state",
 		type=str,
-		default="Karnataka"
+		default=None
 	)
 	# District
 	parser.add_argument(
@@ -59,13 +59,13 @@ def define_arguments(parser):
 		"--district",
 		help="The name of the district",
 		type=str,
-		default="BBMP"
+		default=None
 	)
 	# Age limit
 	parser.add_argument(
 		"-a",
 		"--age_limit",
-		help="The age limit",
+		help="The age limit. Put as 18 for 18+ and 45 for 45+.",
 		type=int,
 		default=DEFAULT_AGE_LIMIT
 	)
@@ -73,9 +73,9 @@ def define_arguments(parser):
 	parser.add_argument(
 		"-p",
 		"--pin_code",
-		help="The pin code",
+		help="The pin code. Use this option with search_type = pin.",
 		type=int,
-		default=560001
+		default=None
 	)
 
 def get_states():
@@ -111,7 +111,6 @@ def find_closest_state(search_state):
 	for state in states["states"]:
 		# TODO: Find closest search. DP FTW.
 		if state["state_name"] == search_state:
-			print(search_state)
 			return state["state_id"], state["state_name"]
 	return None
 
@@ -120,22 +119,6 @@ def find_closest_district(search_district):
 		if district["district_name"] == search_district:
 			return district["district_id"], district["district_name"]
 	return None
-
-def print_available_sessions(available_sessions):
-	if len(available_sessions) == 0:
-		print("No available sessions!!")
-	else:
-		print("Available sessions are: ")
-		row_template = "{:>30}" * 3
-		print(row_template.format(
-			"name", "pincode", "date"
-		))
-	for center, session in available_sessions:
-		print(
-			row_template.format(
-				center["name"], center["pincode"], session["date"]
-			)
-		)
 
 def search_by_district(state, district):
 	get_states()
@@ -169,6 +152,22 @@ def search_by_pincode(pin_code):
 		"date": DATE,
 		"pincode": pin_code,
 	}
+
+def print_available_sessions(available_sessions):
+	if len(available_sessions) == 0:
+		print("No available sessions!!")
+	else:
+		print("Available sessions are: ")
+		row_template = "{:>30}" * 3
+		print(row_template.format(
+			"name", "pincode", "date"
+		))
+	for center, session in available_sessions:
+		print(
+			row_template.format(
+				center["name"], center["pincode"], session["date"]
+			)
+		)
 
 if __name__ == "__main__":
 	# Init the arg parser
