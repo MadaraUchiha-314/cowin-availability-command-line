@@ -27,10 +27,9 @@ centers = {
 	"centers": []
 }
 
-search_types = {
-	"PIN": "pin",
-	"DISTRICT": "district",
-}
+class SearchTypes:
+	PIN = "pin"
+	DISTRICT = "district"
 
 def define_arguments(parser):
 	# State
@@ -39,10 +38,10 @@ def define_arguments(parser):
 		"--search_type",
 		help="The type of search to perform. You can either directly give a pincode or give a combination of state + district.",
 		type=str,
-		default=search_types["DISTRICT"],
+		default=SearchTypes.DISTRICT,
 		choices=[
-			search_types["PIN"],
-			search_types["DISTRICT"],
+			SearchTypes.DISTRICT,
+			SearchTypes.PIN,
 		]
 	)
 	# State
@@ -96,7 +95,7 @@ def get_districts(state_id):
 
 def get_centers(search_type, params):
 	path = CALENDER_BY_DISTRICT
-	if search_type == search_types["PIN"]:
+	if search_type == SearchTypes.PIN:
 		path = CALENDER_BY_PIN
 	centers_response = requests.get(
 		COVIN_BASE_URL + path,
@@ -109,37 +108,43 @@ def get_centers(search_type, params):
 
 def find_closest_state(search_state):
 	for state in states["states"]:
-		# TODO: Find closest search. DP FTW.
+		# TODO: Find closest search. We need to take into account the spelling mistakes.
 		if state["state_name"] == search_state:
 			return state["state_id"], state["state_name"]
-	return None
+	return None, None
 
 def find_closest_district(search_district):
 	for district in districts["districts"]:
+		# TODO: Find closest search. We need to take into account the spelling mistakes.
 		if district["district_name"] == search_district:
 			return district["district_id"], district["district_name"]
-	return None
+	return None, None
 
 def search_by_district(state, district):
+	# We need to first get a list of states
 	get_states()
 
+	# If the state is not provided as a command line argument, we ask the user for the input.
 	if state == None:
 		print("Select a state: ", end="")
 		state = input()
 
+	# We find the state_id of the given state name
 	state_id, state_name = find_closest_state(state)
 
-	print("State Id: {state_id}, State Name: {state_name} ".format(state_id=state_id, state_name=state_name))
+	print("State Id: {state_id}, State Name: {state_name}".format(state_id=state_id, state_name=state_name))
 
+	# We get all the districts for the state
 	get_districts(state_id)
 
 	if district == None:
 		print("Select a district: ", end="")
 		district = input()
 
+	# We find the district_id for given district name
 	district_id, district_name = find_closest_district(district)
 
-	print("District Id: {district_id}, District Name: {district_name} ".format(district_id=district_id, district_name=district_name))
+	print("District Id: {district_id}, District Name: {district_name}".format(district_id=district_id, district_name=district_name))
 
 	return {
 		"date": DATE,
@@ -184,7 +189,7 @@ if __name__ == "__main__":
 	pin_code = args.pin_code
 
 	params = {}
-	if search_type == search_types["DISTRICT"]:
+	if search_type == SearchTypes.DISTRICT:
 		params = search_by_district(state, district)
 	else:
 		params = search_by_pincode(pin_code)
@@ -193,13 +198,12 @@ if __name__ == "__main__":
 
 	available_sessions = []
 
+	# For each of the center and session slots, we check if the age limit matches and if there is a slot available.
 	for center in centers["centers"]:
 		for session in center["sessions"]:
 			if session["min_age_limit"] == age_limit and session["available_capacity"] > 0:
 				available_sessions.append((center, session))
-	print_available_sessions(
-		available_sessions
-	)
+	print_available_sessions(available_sessions)
 	
 		
 
