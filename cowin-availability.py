@@ -15,6 +15,10 @@ CALENDER_BY_PIN = "/appointment/sessions/public/calendarByPin"
 DATE = datetime.today().strftime("%d-%m-%Y")
 DEFAULT_AGE_LIMIT = 18
 
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36',
+}
+
 states = {
 	"states": []
 }
@@ -80,7 +84,8 @@ def define_arguments(parser):
 def get_states():
 	global states
 	states_response = requests.get(
-		COVIN_BASE_URL + STATES
+		COVIN_BASE_URL + STATES,
+		headers=headers
 	)
 	if states_response.status_code == 200:
 		states = states_response.json()
@@ -88,7 +93,8 @@ def get_states():
 def get_districts(state_id):
 	global districts
 	districts_response = requests.get(
-		COVIN_BASE_URL + DISTRICTS.format(state_id=state_id)
+		COVIN_BASE_URL + DISTRICTS.format(state_id=state_id),
+		headers=headers,
 	)
 	if districts_response.status_code == 200:
 		districts = districts_response.json()
@@ -99,7 +105,8 @@ def get_centers(search_type, params):
 		path = CALENDER_BY_PIN
 	centers_response = requests.get(
 		COVIN_BASE_URL + path,
-		params=params
+		params=params,
+		headers=headers,
 	)
 	if centers_response.status_code == 200:
 		return centers_response.json()
